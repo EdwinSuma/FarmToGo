@@ -1,0 +1,55 @@
+﻿@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+    <form asp-action="Login" method="post" novalidate>
+        <!-- General Validation Summary (Shows errors not tied to specific fields) -->
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Email Input Field -->
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <!-- Password Input Field -->
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <div class="input-group">
+                <input asp-for="Password" type="password" class="form-control" id="login-password" />
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('login-password', this)">
+                    <i class="fa fa-eye"></i>
+                </button>
+            </div>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function togglePasswordVisibility(inputId, toggleButton) {
+            const passwordField = document.getElementById(inputId);
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleButton.querySelector("i").classList.remove("fa-eye");
+                toggleButton.querySelector("i").classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                toggleButton.querySelector("i").classList.remove("fa-eye-slash");
+                toggleButton.querySelector("i").classList.add("fa-eye");
+            }
+        }
+    </script>
+}

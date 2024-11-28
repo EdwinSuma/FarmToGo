@@ -1,0 +1,166 @@
+﻿@model AdminDashboardViewModel
+
+<div class="container mt-5">
+    <h2 class="text-primary">Pending Farmer Accounts</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="thead-light">
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var farmer in Model.PendingFarmers)
+            {
+                <tr>
+                    <td>@farmer.FullName</td>
+                    <td>@farmer.Email</td>
+                    <td>
+                        <div class="d-flex">
+                            <form id="approveFarmerForm-@farmer.Id" asp-action="ApproveFarmer" method="post" class="me-2">
+                                <input type="hidden" name="userId" value="@farmer.Id" />
+                                <button type="button" class="btn btn-success" onclick="confirmApprove('approveFarmerForm-@farmer.Id', 'approve this farmer')">Approve</button>
+                            </form>
+                            <form id="denyFarmerForm-@farmer.Id" asp-action="DenyFarmer" method="post">
+                                <input type="hidden" name="userId" value="@farmer.Id" />
+                                <button type="button" class="btn btn-danger" onclick="confirmDelete('denyFarmerForm-@farmer.Id', 'deny this farmer')">Deny</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="text-primary mt-5">Active Courier Accounts</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="thead-light">
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var courier in Model.ActiveCouriers)
+            {
+                <tr>
+                    <td>@courier.FullName</td>
+                    <td>@courier.Email</td>
+                    <td>
+                        <form id="removeCourierForm-@courier.Id" asp-action="RemoveCourier" method="post">
+                            <input type="hidden" name="userId" value="@courier.Id" />
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('removeCourierForm-@courier.Id', 'remove this courier')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="text-primary mt-5">Active Farmer Accounts</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="thead-light">
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var farmer in Model.ActiveFarmers)
+            {
+                <tr>
+                    <td>@farmer.FullName</td>
+                    <td>@farmer.Email</td>
+                    <td>
+                        <form id="removeFarmerForm-@farmer.Id" asp-action="RemoveFarmer" method="post">
+                            <input type="hidden" name="userId" value="@farmer.Id" />
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('removeFarmerForm-@farmer.Id', 'remove this farmer')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="text-primary mt-5">Active Customer Accounts</h2>
+    <table class="table table-bordered mt-4">
+        <thead class="thead-light">
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in Model.ActiveCustomers)
+            {
+                <tr>
+                    <td>@customer.FullName</td>
+                    <td>@customer.Email</td>
+                    <td>
+                        <form id="removeCustomerForm-@customer.Id" asp-action="RemoveCustomer" method="post">
+                            <input type="hidden" name="userId" value="@customer.Id" />
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete('removeCustomerForm-@customer.Id', 'remove this customer')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(formId, action) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to " + action + ". This action cannot be undone.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
+        function confirmApprove(formId, action) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to " + action + ".",
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, approve!",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var message = '@TempData["Message"]';
+            var messageType = '@TempData["MessageType"]';
+
+            if (message) {
+                Swal.fire({
+                    icon: messageType,
+                    title: messageType === "success" ? "Success" : "Error",
+                    text: message,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    </script>
+}

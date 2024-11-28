@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-white" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
+            @User.Identity.Name
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            @if (User.IsInRole("Administrator"))
+            {
+                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin Dashboard</a></li>
+            }
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="Manage">Manage Account</a></li>
+            <li>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item">
+                    <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-white" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown">
+            Account
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Login</a></li>
+            <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">Register</a></li>
+        </ul>
+    </li>
+}
