@@ -12,6 +12,9 @@ namespace Farmers.App.Models
         public int SellerId { get; set; }
 
         [Required]
+        public string Seller { get; set; }
+
+        [Required]
         [StringLength(30, ErrorMessage = "Product Name must not exceed 30 characters.")]
         [Display(Name = "Product Name")]
         public string ProductName { get; set; }

@@ -10,16 +10,20 @@
 
     <p class="mb-4">Learn more about how to use our platform and make the most of your experience:</p>
 
+
     <div class="row">
-        <div class="col-md-4">
+        <div class="col">
             <h3><a href="/Home/About">About Us</a></h3>
             <p>Learn about our mission and values.</p>
         </div>
-        <div class="col-md-4">
-            <h3><a href="/FTG/Index">Enter Farm-To-Go</a></h3>
-            <p>Explore our product listings.</p>
-        </div>
-        <div class="col-md-4">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="col">
+                <h3><a href="/Product/Index">Enter Farm-To-Go</a></h3>
+                <p>Explore our product listings.</p>
+            </div>
+        }
+        <div class="col">
             <h3><a href="/Home/Privacy">Help & Support</a></h3>
             <p>Get assistance and find answers to your questions.</p>
         </div>

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Farmers.DataModel\Farmers.DataModel.csproj" />
+    <ProjectReference Include="..\FTG.Repository\FTG.Repository.csproj" />
   </ItemGroup>
 
 </Project>
