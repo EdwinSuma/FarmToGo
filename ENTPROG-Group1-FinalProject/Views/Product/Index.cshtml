@@ -1,0 +1,92 @@
+﻿@model List<ProductVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+    <i class="fas fa-caret-square-left"></i></> Back To Home Page
+</a>
+<a asp-controller="Product" asp-action="Add" class="btn btn-success">
+    Add New Product <i class="fas fa-plus"></i></>
+</a>
+<a asp-controller="Product" asp-action="MyProducts" class="btn btn-success">
+    My Products
+</a>
+<br></br>
+@if (Model.Count() < 1)
+{
+    <div class="alert alert-info">
+        No Products  Found.
+    </div>
+}
+
+else
+{
+    <table id="ProductTable" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Seller</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ProductVM obj in Model)
+            {
+                <tr>
+                    <td>@obj.Seller</td>
+                    <td>@obj.ProductName</td>
+                    <td>@obj.ProductDescription</td>
+                    <td>@obj.Price</td>
+                    <td>@obj.Stock</td>
+                    <td>@obj.CategoryName</td>
+                    <td>
+                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@obj.ProductId"
+                           class="btn btn-info btn-sm">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </a>
+
+                        <button class="btn btn-danger btn-sm Delete" data-id="@obj.ProductId">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+<form id="DeleteProduct" asp-controller="Product" asp-action="Delete" method="post">
+    <input type="hidden" id="ProductId" name="Id" value="" />
+</form>
+
+@section Scripts {
+    <script>
+        $('.Delete').click(function (e) {
+            var btn = $(this);
+            var id = btn.data("id");
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Deleting this product cannot be undone. ",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#ProductId").val(id);
+                    $("#DeleteProduct").submit();
+                }
+            });
+        });
+    </script>
+}

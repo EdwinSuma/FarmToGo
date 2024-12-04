@@ -9,6 +9,9 @@ namespace Farmers.DataModel {
         public int ProductId { get; set; }
 
         [Required]
+        public string Seller { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         [Required]
