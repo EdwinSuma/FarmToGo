@@ -26,6 +26,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                  
                     </ul>
                     <ul class="navbar-nav">
                         <!-- Render LoginPartial -->
@@ -71,8 +72,8 @@
                     document.getElementById(formId).submit();
                 }
             });
-        @RenderSection("Scripts", required: false)
         }
+        @RenderSection("Scripts", required: false)
     </script>
 </body>
 </html>

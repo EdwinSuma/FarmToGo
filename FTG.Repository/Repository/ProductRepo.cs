@@ -12,7 +12,25 @@ namespace FTG.Repository.Repository
 
         public async Task<List<Product>> GetByFarmerIdAsync(int farmerId)
         {
-            return await _context.Products.Where(p => p.FarmerId == farmerId).ToListAsync();
+            return await _context.Products
+                .Where(p => p.FarmerId == farmerId)
+                .ToListAsync();
+        }
+
+        // Implement the method to get a product by its ID
+        public async Task<Product> GetProductByIdAsync(int productId)
+        {
+            return await _context.Products
+                .Where(p => p.ProductId == productId)
+                .FirstOrDefaultAsync();
+        }
+
+        // Implement the method to get available products
+        public async Task<List<Product>> GetAvailableProductsAsync()
+        {
+            return await _context.Products
+                .Where(p => p.Stock > 0)
+                .ToListAsync();
         }
     }
 }

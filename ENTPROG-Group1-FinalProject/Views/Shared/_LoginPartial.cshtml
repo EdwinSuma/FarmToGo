@@ -3,17 +3,32 @@
 @inject UserManager<ApplicationUser> UserManager
 
 @if (SignInManager.IsSignedIn(User))
+
 {
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle text-white" href="#" id="userMenu" role="button" data-bs-toggle="dropdown">
             @User.Identity.Name
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+
+            <!-- Admin Dashboard link (only visible to Admins) -->
             @if (User.IsInRole("Administrator"))
+
             {
                 <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin Dashboard</a></li>
             }
+
+            <!-- Products link (only visible to Customers) -->
+            @if (User.IsInRole("Customer"))
+
+            {
+                <li><a class="dropdown-item" asp-controller="Customer" asp-action="Index">Products</a></li>
+            }
+
+            <!-- Manage Account link (visible to all authenticated users) -->
             <li><a class="dropdown-item" asp-controller="Account" asp-action="Manage">Manage Account</a></li>
+
+            <!-- Logout link (for signed-in users) -->
             <li>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item">
                     <button type="submit" class="btn btn-link text-decoration-none">Logout</button>
@@ -22,14 +37,18 @@
         </ul>
     </li>
 }
+
 else
+
 {
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle text-white" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown">
             Account
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
+            <!-- Login link (only visible when user is not authenticated) -->
             <li><a class="dropdown-item" asp-controller="Account" asp-action="Login">Login</a></li>
+            <!-- Register link (only visible when user is not authenticated) -->
             <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">Register</a></li>
         </ul>
     </li>

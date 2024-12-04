@@ -8,13 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EdwinPC")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AlfelPC")));
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
 builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<IFarmerRepo, FarmerRepo>();
+builder.Services.AddScoped<IOrderRepo, OrderRepo>();
+builder.Services.AddScoped<IInvoiceRepo, InvoiceRepo>();
+builder.Services.AddScoped<ICustomerRepo, CustomerRepo>();
+
+
 // Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {

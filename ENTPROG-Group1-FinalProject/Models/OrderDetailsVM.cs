@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Farmers.DataModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Farmers.App.Models
 {
@@ -22,6 +23,7 @@ namespace Farmers.App.Models
         //Product details
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }
+        public Product Product { get; set; }
 
     }
 }

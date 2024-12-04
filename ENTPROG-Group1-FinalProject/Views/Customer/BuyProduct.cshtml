@@ -1,0 +1,24 @@
+﻿@model Farmers.App.Models.CustomerViewModel
+
+@{
+    ViewData["Title"] = "Buy Product";
+}
+
+<h1>@Model.BuyProductViewModel.Name</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Product Details</h5>
+        <p class="card-text">@Model.BuyProductViewModel.Description</p>
+        <p class="card-text"><strong>Price:</strong> @Model.BuyProductViewModel.Price.ToString("C")</p>
+        <p class="card-text"><strong>Available Stock:</strong> @Model.BuyProductViewModel.Stock</p>
+
+        <form method="post">
+            <div class="form-group">
+                <label for="Quantity">Quantity</label>
+                <input type="number" class="form-control" id="Quantity" name="BuyProductViewModel.Quantity" value="1" min="1" max="@Model.BuyProductViewModel.Stock" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Confirm Purchase</button>
+        </form>
+    </div>
+</div>

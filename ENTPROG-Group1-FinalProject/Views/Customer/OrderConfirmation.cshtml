@@ -1,0 +1,32 @@
+﻿@model Farmers.App.Models.CustomerViewModel
+
+<h2>Order Confirmation</h2>
+
+<div>
+    <p><strong>Order ID:</strong> @Model.Order.OrderId</p>
+    <p><strong>Order Status:</strong> @Model.Order.OrderStatus</p>
+    <p><strong>Order Date:</strong> @Model.Order.OrderDate</p>
+    <p><strong>Total Amount:</strong> @Model.Order.TotalAmount</p>
+    <h3>Order Details</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderDetail in Model.Order.OrderDetails)
+            {
+                <tr>
+                    <td>@orderDetail.Product.Name</td>
+                    <td>@orderDetail.Quantity</td>
+                    <td>@orderDetail.Product.Price</td>
+                    <td>@orderDetail.Quantity * orderDetail.Product.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

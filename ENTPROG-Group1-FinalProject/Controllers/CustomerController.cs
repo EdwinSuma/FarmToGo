@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Farmers.App.Controllers
 {
-    [Authorize] // Restrict access to logged-in users
+     // Restrict access to logged-in users
     public class CustomerController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
