@@ -161,11 +161,9 @@ namespace Farmers.App.Controllers
 
                 _mapper.Map(model, product);
                 await _productRepo.UpdateAsync(product);
-
                 return RedirectToAction(nameof(MyProducts));
             }
 
-            // Re-populate categories in case of validation errors
             model.Categories = new List<SelectListItem>
             {
                 new SelectListItem { Value = "1", Text = "Vegetables" },
@@ -173,29 +171,6 @@ namespace Farmers.App.Controllers
                 new SelectListItem { Value = "3", Text = "Dairy" }
             };
             return View(model);
-        }
-
-        // DELETE: Product/Delete/{id}
-        [HttpPost]
-        [Authorize(Roles = "Farmer")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var product = await _productRepo.GetAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var farmer = await _farmerRepo.GetByUserIdAsync(userId);
-            if (farmer == null || product.FarmerId != farmer.FarmerId)
-            {
-                return Unauthorized();
-            }
-
-            await _productRepo.DeleteAsync(id);
-            return RedirectToAction(nameof(MyProducts));
         }
     }
 }
