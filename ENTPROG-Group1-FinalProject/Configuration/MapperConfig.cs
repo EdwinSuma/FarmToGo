@@ -8,7 +8,6 @@ namespace Farmers.App.Configuration
     {
         public MapperConfig() 
         {
-            CreateMap<Courier, CreateCourierViewModel>().ReverseMap();
             CreateMap<Product, ProductVM>().ReverseMap();
             CreateMap<Farmer, FarmerVM>().ReverseMap();
             CreateMap<OrderDetail, OrderDetailsVM>().ReverseMap();

@@ -1,45 +1,41 @@
 ﻿@model ProductVM
 
-<h3>Add Product</h3>
-<hr />
+<div class="container mt-5">
+    <h2>Add New Product</h2>
 
+    <form asp-action="Add" method="post">
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
 
-<form asp-controller="Product" asp-action="Add" method="post">
-    <label asp-for="ProductName"></label>
-    <input type="text" asp-for="ProductName" class="form-control" value="@Model.ProductName" />
-    <span asp-validation-for="ProductName" class="text-danger"></span>
-    <br />
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
 
-    <label asp-for="ProductDescription"></label>
-    <input type="text" asp-for="ProductDescription" class="form-control" value="@Model.ProductDescription" />
-    <span asp-validation-for="ProductDescription" class="text-danger"></span>
-    <br />
+        <div class="form-group">
+            <label asp-for="CategoryId">Category</label>
+            <select asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "Value", "Text"))" class="form-control">
+                <option value="">Select Category</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
 
-    <label asp-for="Price"></label>
-    <input type="text" asp-for="Price" class="form-control" value="@Model.Price" />
-    <span asp-validation-for="Price" class="text-danger"></span>
-    <br />
+        <div class="form-group">
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
 
-    <label asp-for="Stock"></label>
-    <input type="text" asp-for="Stock" class="form-control" value="@Model.Stock" />
-    <span asp-validation-for="Stock" class="text-danger"></span>
-    <br />
+        <div class="form-group">
+            <label asp-for="Stock"></label>
+            <input asp-for="Stock" class="form-control" />
+            <span asp-validation-for="Stock" class="text-danger"></span>
+        </div>
 
-    <label asp-for="CategoryName"></label>
-    <select asp-for="CategoryName">
-        <option value="Fruits">Fruits</option>
-        <option value="Vegetables">Vegetables</option>
-        <option value="Rice & Grains">Rice & Grains</option>
-        <option value="Dairy">Dairy</option>
-        <option value="Meat">Meat</option>
-        <option value="Fish & Seafood">Fish & Seafood</option>
-    </select>
-
-
-    <input type="submit" value="Add Product" class="btn-success" />
-    <br />
-    <br />
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
-        Back
-    </a>
-</form>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+</div>

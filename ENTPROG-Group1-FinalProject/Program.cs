@@ -1,5 +1,5 @@
 using Farmers.App.Configuration;
-using Farmers.App.Models.Repositories;
+using FTG.Repository.Repository;
 using Farmers.DataModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Hamili")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EdwinPC")));
 
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
-builder.Services.AddScoped<IProductRepo, ProductRepo>();
-builder.Services.AddScoped<IOrderRepo, OrderRepo>();
-
+builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
+builder.Services.AddScoped<IFarmerRepo, FarmerRepo>();
 // Add Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {

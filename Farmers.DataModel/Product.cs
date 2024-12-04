@@ -1,15 +1,12 @@
-﻿using Farmers.DataModel;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Farmers.DataModel {
+namespace Farmers.DataModel
+{
     public class Product
     {
         [Key]
         public int ProductId { get; set; }
-
-        [Required]
-        public string Seller { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -40,5 +37,5 @@ namespace Farmers.DataModel {
 
         // Navigation Properties
         public ICollection<OrderDetail> OrderDetails { get; set; }
-    } 
+    }
 }

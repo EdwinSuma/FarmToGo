@@ -1,94 +1,201 @@
 ﻿using AutoMapper;
 using Farmers.App.Models;
 using Farmers.DataModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Farmers.App.Models.Repositories;
 using FTG.Repository.Repository;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace SupplierINV.Controllers
+namespace Farmers.App.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
-        private readonly AppDbContext dbc;
-        private readonly IMapper mapper;
-        private readonly IProductRepo repo;
-        public ProductController(IProductRepo repo, AppDbContext dbc, IMapper mapper)
+        private readonly IProductRepo _productRepo;
+        private readonly IFarmerRepo _farmerRepo;
+        private readonly ICategoryRepo _categoryRepo;
+        private readonly IMapper _mapper;
+
+        public ProductController(IProductRepo productRepo, IFarmerRepo farmerRepo, ICategoryRepo categoryRepo, IMapper mapper)
         {
-            this.repo = repo;
-            this.dbc = dbc;
-            this.mapper = mapper;
+            _productRepo = productRepo;
+            _farmerRepo = farmerRepo;
+            _categoryRepo = categoryRepo;
+            _mapper = mapper;
         }
+
+        // GET: Product/Index
         public async Task<IActionResult> Index()
         {
-            return View(mapper.Map<List<ProductVM>>(await repo.GetAllAsync()));
+            var products = await _productRepo.GetAllAsync();
+            var productVMs = products.Select(p => new ProductVM
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock,
+                CategoryName = p.Category.Name,
+                FarmerName = p.Farmer.User.FullName,
+                DateAdded = p.DateAdded
+            }).ToList();
+
+            return View(productVMs);
         }
 
+        // GET: Product/MyProducts
+        [Authorize(Roles = "Farmer")]
+        public async Task<IActionResult> MyProducts()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var farmer = await _farmerRepo.GetByUserIdAsync(userId);
+            if (farmer == null)
+            {
+                return Unauthorized();
+            }
 
+            var products = await _productRepo.GetByFarmerIdAsync(farmer.FarmerId);
+            var productVMs = _mapper.Map<List<ProductVM>>(products);
+            return View(productVMs);
+        }
+
+        // GET: Product/Add
+        [Authorize(Roles = "Farmer")]
         public IActionResult Add()
         {
-            return View(new ProductVM());
+            var model = new ProductVM
+            {
+                Categories = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "1", Text = "Vegetables" },
+                    new SelectListItem { Value = "2", Text = "Fruits" },
+                    new SelectListItem { Value = "3", Text = "Dairy" }
+                }
+            };
+            return View(model);
         }
 
+        // POST: Product/Add
         [HttpPost]
+        [Authorize(Roles = "Farmer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(ProductVM model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid == true)
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var farmer = await _farmerRepo.GetByUserIdAsync(userId);
+                if (farmer == null)
                 {
-                    ProductVM product = new ProductVM();
-                    var Seller = User.Identity.Name;
-                    product.ProductName = model.ProductName;
-                    await repo.AddAsync(mapper.Map<Product>(model));
-                    await dbc.SaveChangesAsync();
-                    return RedirectToAction("Index");
+                    return Unauthorized();
                 }
-                else
-                {
-                    return View(model);
-                }
+
+                var product = _mapper.Map<Product>(model);
+                product.FarmerId = farmer.FarmerId;
+
+                await _productRepo.AddAsync(product);
+                return RedirectToAction(nameof(MyProducts));
             }
-            catch (Exception ex)
+
+            // Re-populate categories in case of validation errors
+            model.Categories = new List<SelectListItem>
             {
-                ModelState.AddModelError("Error", ex.Message);
-                return View(model);
-            }
+                new SelectListItem { Value = "1", Text = "Vegetables" },
+                new SelectListItem { Value = "2", Text = "Fruits" },
+                new SelectListItem { Value = "3", Text = "Dairy" }
+            };
+            return View(model);
         }
 
-        public async Task<IActionResult> Edit(int? Id)
+        // GET: Product/Edit/{id}
+        [Authorize(Roles = "Farmer")]
+        public async Task<IActionResult> Edit(int id)
         {
-            if (Id == null)
+            var product = await _productRepo.GetAsync(id);
+            if (product == null)
             {
-                return RedirectToAction("Index");
+                return NotFound();
             }
 
-            ProductVM product = mapper.Map<ProductVM>(await repo.GetAsync((int)Id));
-            return View(mapper.Map<ProductVM>(product));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var farmer = await _farmerRepo.GetByUserIdAsync(userId);
+            if (farmer == null || product.FarmerId != farmer.FarmerId)
+            {
+                return Unauthorized();
+            }
+
+            var model = _mapper.Map<ProductVM>(product);
+            model.Categories = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "Vegetables" },
+                new SelectListItem { Value = "2", Text = "Fruits" },
+                new SelectListItem { Value = "3", Text = "Dairy" }
+            };
+
+            return View(model);
         }
 
+        // POST: Product/Edit/{id}
         [HttpPost]
+        [Authorize(Roles = "Farmer")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ProductVM model)
+        public async Task<IActionResult> Edit(int id, ProductVM model)
         {
             if (ModelState.IsValid)
             {
-                await repo.UpdateAsync(mapper.Map<Product>(model));
-                return RedirectToAction("Index");
+                var product = await _productRepo.GetAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var farmer = await _farmerRepo.GetByUserIdAsync(userId);
+                if (farmer == null || product.FarmerId != farmer.FarmerId)
+                {
+                    return Unauthorized();
+                }
+
+                _mapper.Map(model, product);
+                await _productRepo.UpdateAsync(product);
+
+                return RedirectToAction(nameof(MyProducts));
             }
-            else
+
+            // Re-populate categories in case of validation errors
+            model.Categories = new List<SelectListItem>
             {
-                return View(model);
-            }
+                new SelectListItem { Value = "1", Text = "Vegetables" },
+                new SelectListItem { Value = "2", Text = "Fruits" },
+                new SelectListItem { Value = "3", Text = "Dairy" }
+            };
+            return View(model);
         }
 
+        // DELETE: Product/Delete/{id}
         [HttpPost]
+        [Authorize(Roles = "Farmer")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int Id)
+        public async Task<IActionResult> Delete(int id)
         {
-            await repo.DeleteAsync(Id);
-            return RedirectToAction("Index");
+            var product = await _productRepo.GetAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var farmer = await _farmerRepo.GetByUserIdAsync(userId);
+            if (farmer == null || product.FarmerId != farmer.FarmerId)
+            {
+                return Unauthorized();
+            }
+
+            await _productRepo.DeleteAsync(id);
+            return RedirectToAction(nameof(MyProducts));
         }
     }
 }

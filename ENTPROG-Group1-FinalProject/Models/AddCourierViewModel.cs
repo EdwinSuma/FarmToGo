@@ -2,7 +2,7 @@
 
 namespace Farmers.App.Models
 {
-    public class CreateCourierViewModel
+    public class AddCourierViewModel
     {
         [Required]
         [Display(Name = "Full Name")]

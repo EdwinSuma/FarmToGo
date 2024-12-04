@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Farmers.DataModel
 {
@@ -28,7 +24,6 @@ namespace Farmers.DataModel
 
         // Navigation Properties
         public ICollection<Product> Products { get; set; }
-
         public ICollection<Invoice> Invoices { get; set; } // One-to-Many with Invoice
     }
 }

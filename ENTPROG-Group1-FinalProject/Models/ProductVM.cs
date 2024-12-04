@@ -1,41 +1,39 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Farmers.App.Models
 {
     public class ProductVM
     {
-        [Required]
         public int ProductId { get; set; }
 
         [Required]
-        public int SellerId { get; set; }
+        public string Name { get; set; }
 
         [Required]
-        public string Seller { get; set; }
+        public string Description { get; set; }
 
         [Required]
-        [StringLength(30, ErrorMessage = "Product Name must not exceed 30 characters.")]
-        [Display(Name = "Product Name")]
-        public string ProductName { get; set; }
-
-        [Required]
-        [Display(Name = "Product Description")]
-        public string ProductDescription { get; set; }
-
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
-        [Display(Name = "Price")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
         public decimal Price { get; set; }
 
         [Required]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock must be zero or more.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Stock must be at least 1")]
         public int Stock { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
 
-        [Display(Name = "Category")]
+        [Required]
+        public int FarmerId { get; set; }
+
+        public IEnumerable<SelectListItem> Categories { get; set; }
+
+        // For display purposes
         public string CategoryName { get; set; }
+        public string FarmerName { get; set; }
+
+        public DateTime DateAdded { get; set; }
     }
 }

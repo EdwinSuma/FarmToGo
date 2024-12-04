@@ -47,6 +47,59 @@ namespace Farmers.App.Controllers
             return View(viewModel);
         }
 
+        // GET: Admin/AddCourier - Form to add courier account
+        [HttpGet]
+        public IActionResult AddCourier()
+        {
+            return View(new AddCourierViewModel());
+        }
+
+        // POST: Admin/AddCourier - Handle adding of courier account
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCourier(AddCourierViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    EmailConfirmed = true // No approval required for courier
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    // Create "Courier" role if it does not exist
+                    if (!await _roleManager.RoleExistsAsync("Courier"))
+                    {
+                        var roleResult = await _roleManager.CreateAsync(new IdentityRole("Courier"));
+                        if (!roleResult.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, "Error creating role. Please try again.");
+                            return View(model);
+                        }
+                    }
+
+                    // Assign "Courier" role to the user
+                    await _userManager.AddToRoleAsync(user, "Courier");
+
+                    TempData["SuccessMessage"] = "Courier account successfully created.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            return View(model);
+        }
+
         // POST: Admin/ApproveFarmer
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -64,12 +117,10 @@ namespace Farmers.App.Controllers
             if (result.Succeeded)
             {
                 TempData["Message"] = "Farmer approved successfully.";
-                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["Message"] = "Unable to approve the farmer.";
-            TempData["MessageType"] = "error";
+            ModelState.AddModelError(string.Empty, "Unable to approve the farmer.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -89,12 +140,10 @@ namespace Farmers.App.Controllers
             if (result.Succeeded)
             {
                 TempData["Message"] = "Farmer denied successfully.";
-                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["Message"] = "Unable to deny the farmer.";
-            TempData["MessageType"] = "error";
+            ModelState.AddModelError(string.Empty, "Unable to deny the farmer.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -114,12 +163,10 @@ namespace Farmers.App.Controllers
             if (result.Succeeded)
             {
                 TempData["Message"] = "Courier removed successfully.";
-                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["Message"] = "Unable to remove the courier.";
-            TempData["MessageType"] = "error";
+            ModelState.AddModelError(string.Empty, "Unable to remove the courier.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -139,12 +186,10 @@ namespace Farmers.App.Controllers
             if (result.Succeeded)
             {
                 TempData["Message"] = "Farmer removed successfully.";
-                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["Message"] = "Unable to remove the farmer.";
-            TempData["MessageType"] = "error";
+            ModelState.AddModelError(string.Empty, "Unable to remove the farmer.");
             return RedirectToAction(nameof(Index));
         }
 
@@ -164,12 +209,10 @@ namespace Farmers.App.Controllers
             if (result.Succeeded)
             {
                 TempData["Message"] = "Customer removed successfully.";
-                TempData["MessageType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["Message"] = "Unable to remove the customer.";
-            TempData["MessageType"] = "error";
+            ModelState.AddModelError(string.Empty, "Unable to remove the customer.");
             return RedirectToAction(nameof(Index));
         }
     }

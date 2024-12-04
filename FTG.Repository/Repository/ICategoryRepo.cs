@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace FTG.Repository.Repository
 {
-    public interface IProductRepo : IGenericRepo<Product>
+    public interface ICategoryRepo : IGenericRepo<ProductCategory>
     {
-        Task<List<Product>> GetByFarmerIdAsync(int farmerId);
+        Task<List<ProductCategory>> GetAllForDropdownAsync();
     }
 }
