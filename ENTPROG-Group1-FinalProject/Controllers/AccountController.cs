@@ -38,6 +38,14 @@ namespace Farmers.App.Controllers
                     return View(model);
                 }
 
+                // Check if the email is already registered
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Email", "The email address is already registered. Please use a different email.");
+                    return View(model);
+                }
+
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
@@ -149,6 +157,142 @@ namespace Farmers.App.Controllers
         public IActionResult PendingApproval()
         {
             return View();
+        }
+
+        // GET: Account/Manage - View for managing account
+        [HttpGet]
+        public async Task<IActionResult> Manage()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var model = new ManageAccountViewModel
+            {
+                FullName = user.FullName,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+        // GET: Account/EditProfile
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var model = new UpdateProfileViewModel
+            {
+                FullName = user.FullName,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+        // POST: Account/EditProfile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(UpdateProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Profile updated successfully.";
+                return RedirectToAction(nameof(Manage));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        // GET: Account/ChangePassword
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        // POST: Account/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Password changed successfully.";
+                return RedirectToAction(nameof(Manage));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return View(model);
+        }
+
+        // POST: Account/DeleteAccount
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignOutAsync();
+                return RedirectToAction(nameof(Index), "Home");
+            }
+
+            TempData["ErrorMessage"] = "Error occurred while deleting your account. Please try again.";
+            return RedirectToAction(nameof(Manage));
         }
     }
 }
